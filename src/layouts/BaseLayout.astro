@@ -30,6 +30,47 @@ const sections = [
   { name: "Movilidad & Obras", href: "/seccion/movilidad-y-obras/" },
   { name: "Comunidad & Servicios", href: "/seccion/comunidad-y-servicios/" },
 ];
+
+const siteUrl = 'https://vozdelbarrio.com.mx';
+const currentCanonical = canonicalURL || Astro.url.href;
+
+const jsonLd = type === 'article'
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': currentCanonical.toString(),
+      },
+      headline: title,
+      description: description,
+      image: [image.startsWith('http') ? image : new URL(image, siteUrl).toString()],
+      datePublished: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+      dateModified: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+      author: [
+        {
+          '@type': 'Person',
+          name: author,
+        },
+      ],
+      publisher: {
+        '@type': 'NewsMediaOrganization',
+        name: 'La Voz del Barrio GAM',
+        url: siteUrl,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${siteUrl}/logo.png`,
+        },
+      },
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'NewsMediaOrganization',
+      name: 'La Voz del Barrio GAM',
+      url: siteUrl,
+      logo: `${siteUrl}/logo.png`,
+      description: description,
+    };
 ---
 
 <!DOCTYPE html>
@@ -127,6 +168,14 @@ const sections = [
       border-color: #d8d8d8;
     }
   </style>
+
+  <!-- Search Engine & Google News Directives -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
 </head>
 <body>
 
