@@ -47,62 +47,65 @@ function formatDate(d: Date): string {
   <div class="container">
     
     <!-- Section Header -->
-    <header class="g-card" style="padding: 28px; margin-bottom: 24px; background: #ffffff;">
-      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-primary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">
-        <span>Sección Editorial</span>
-      </div>
-      <h1 style="font-size: 28px; font-weight: 800; color: var(--color-text-main); margin-bottom: 8px; letter-spacing: -0.3px;">
+    <header style="margin-bottom: 36px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border);">
+      <h1 style="font-size: 32px; font-weight: 800; color: var(--color-text-main); margin-bottom: 8px; letter-spacing: -0.4px;">
         {section.name}
       </h1>
-      <p style="font-size: 15px; color: var(--color-text-muted); max-width: 720px; line-height: 1.5;">
+      <p style="font-size: 15px; color: var(--color-text-muted); max-width: 680px;">
         {section.desc}
       </p>
     </header>
 
     <!-- Articles Grid -->
     {articles.length === 0 ? (
-      <div class="g-card" style="padding: 40px; text-align: center; color: var(--color-text-muted);">
+      <div style="padding: 48px; text-align: center; color: var(--color-text-muted); background: #ffffff; border-radius: var(--radius-card); border: 1px solid var(--color-border);">
         <p>No hay artículos publicados en esta sección por el momento.</p>
-        <a href="/" style="display: inline-block; margin-top: 12px; color: var(--color-primary); font-weight: 700;">Volver a la portada</a>
+        <a href="/" style="display: inline-block; margin-top: 12px; color: var(--color-primary); font-weight: 700;">Volver al inicio</a>
       </div>
     ) : (
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 28px;">
         {articles.map(art => (
-          <article class="g-card" style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+          <article class="clean-card" style="display: flex; flex-direction: column; justify-content: space-between; background: #ffffff;">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px;">
-                <span style="background: var(--color-primary-light); color: var(--color-primary); padding: 2px 8px; border-radius: 4px; font-weight: 700;">
-                  {art.data.category}
-                </span>
-                {art.data.colonia && (
-                  <span style="color: var(--color-text-muted);">📍 {art.data.colonia}</span>
-                )}
-              </div>
-
-              <a href={`/noticias/${art.id}/`} style="display: block; margin-bottom: 14px;">
+              <a href={`/noticias/${art.id}/`} style="display: block; overflow: hidden;">
                 <img 
                   src={art.data.image} 
                   alt={art.data.title}
                   referrerpolicy="no-referrer"
                   onerror="this.onerror=null; this.src='/logo.png';"
-                  style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border);" 
+                  style="width: 100%; height: 200px; object-fit: cover;" 
                 />
               </a>
 
-              <h2 style="font-size: 18px; font-weight: 700; line-height: 1.35; color: var(--color-text-main); margin-bottom: 10px;">
-                <a href={`/noticias/${art.id}/`} style="color: inherit; text-decoration: none;">
-                  {art.data.title}
-                </a>
-              </h2>
+              <div style="padding: 22px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 12px;">
+                  <span style="color: var(--color-primary); font-weight: 700;">
+                    {art.data.category}
+                  </span>
+                  {art.data.colonia && (
+                    <span style="color: var(--color-text-subtle);">
+                      {art.data.colonia}
+                    </span>
+                  )}
+                </div>
 
-              <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 16px;">
-                {art.data.excerpt || art.data.subtitle}
-              </p>
+                <h2 style="font-size: 18px; font-weight: 700; line-height: 1.35; color: var(--color-text-main); margin-bottom: 10px;">
+                  <a href={`/noticias/${art.id}/`} style="color: inherit; text-decoration: none;">
+                    {art.data.title}
+                  </a>
+                </h2>
+
+                <p style="font-size: 14px; color: var(--color-text-muted); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                  {art.data.excerpt || art.data.subtitle}
+                </p>
+              </div>
             </div>
 
-            <div style="border-top: 1px solid var(--color-border-light); padding-top: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--color-text-subtle);">
+            <div style="padding: 0 22px 20px 22px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--color-text-subtle); border-top: 1px solid var(--color-border); padding-top: 12px;">
               <span>{formatDate(art.data.pubDate)}</span>
-              <a href={`/noticias/${art.id}/`} style="color: var(--color-primary); font-weight: 700;">Leer nota →</a>
+              <a href={`/noticias/${art.id}/`} style="color: var(--color-primary); font-weight: 600;">
+                Leer nota →
+              </a>
             </div>
           </article>
         ))}
