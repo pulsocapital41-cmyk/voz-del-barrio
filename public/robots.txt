@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://vozdelbarrio.com.mx/sitemap-index.xml

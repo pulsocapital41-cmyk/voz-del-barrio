@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const sections = [
+    { slug: "colonias-y-barrios", name: "Colonias & Barrios", desc: "Reportes comunitarios, crónicas locales y vida barrial en Cuautepec, Aragón, Lindavista, San Felipe y toda la GAM." },
+    { slug: "seguridad-y-denuncia", name: "Seguridad & Denuncia", desc: "Patrullajes preventivos, cuadrantes vecinales, botones de auxilio y denuncias de servicios públicos." },
+    { slug: "movilidad-y-obras", name: "Movilidad & Obras", desc: "Cablebús L1, Metrobús, Metro Indios Verdes, jornadas de bacheo, agua y drenaje en la alcaldía." },
+    { slug: "comunidad-y-servicios", name: "Comunidad & Servicios", desc: "Ferias de salud preventiva, mastografías, programas del bienestar, trámites y eventos culturales." },
+    { slug: "gam-al-dia", name: "GAM al Día", desc: "Actualidad metropolitana, actividades institucionales y noticias de impacto en Gustavo A. Madero." },
+  ];
+
+  const allArticles = await getCollection('noticias');
+
+  const normalize = (str: string) =>
+    str.toLowerCase().replace(/&/g, 'y').replace(/\s+/g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  return sections.map(sec => {
+    const filtered = allArticles
+      .filter(art => normalize(art.data.category) === sec.slug)
+      .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+    return {
+      params: { categoria: sec.slug },
+      props: { section: sec, articles: filtered },
+    };
+  });
+}
+
+const { section, articles } = Astro.props;
+
+function formatDate(d: Date): string {
+  return new Intl.DateTimeFormat('es-MX', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }).format(d);
+}
+---
+
+<BaseLayout
+  title={`${section.name} — La Voz del Barrio GAM`}
+  description={section.desc}
+  activeSection={section.name}
+>
+  <div class="container">
+    
+    <!-- Section Header -->
+    <header class="g-card" style="padding: 28px; margin-bottom: 24px; background: #ffffff;">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-primary); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">
+        <span>Sección Editorial</span>
+      </div>
+      <h1 style="font-size: 28px; font-weight: 800; color: var(--color-text-main); margin-bottom: 8px; letter-spacing: -0.3px;">
+        {section.name}
+      </h1>
+      <p style="font-size: 15px; color: var(--color-text-muted); max-width: 720px; line-height: 1.5;">
+        {section.desc}
+      </p>
+    </header>
+
+    <!-- Articles Grid -->
+    {articles.length === 0 ? (
+      <div class="g-card" style="padding: 40px; text-align: center; color: var(--color-text-muted);">
+        <p>No hay artículos publicados en esta sección por el momento.</p>
+        <a href="/" style="display: inline-block; margin-top: 12px; color: var(--color-primary); font-weight: 700;">Volver a la portada</a>
+      </div>
+    ) : (
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+        {articles.map(art => (
+          <article class="g-card" style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px;">
+                <span style="background: var(--color-primary-light); color: var(--color-primary); padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                  {art.data.category}
+                </span>
+                {art.data.colonia && (
+                  <span style="color: var(--color-text-muted);">📍 {art.data.colonia}</span>
+                )}
+              </div>
+
+              <a href={`/noticias/${art.id}/`} style="display: block; margin-bottom: 14px;">
+                <img 
+                  src={art.data.image} 
+                  alt={art.data.title}
+                  referrerpolicy="no-referrer"
+                  onerror="this.onerror=null; this.src='/logo.png';"
+                  style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border);" 
+                />
+              </a>
+
+              <h2 style="font-size: 18px; font-weight: 700; line-height: 1.35; color: var(--color-text-main); margin-bottom: 10px;">
+                <a href={`/noticias/${art.id}/`} style="color: inherit; text-decoration: none;">
+                  {art.data.title}
+                </a>
+              </h2>
+
+              <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 16px;">
+                {art.data.excerpt || art.data.subtitle}
+              </p>
+            </div>
+
+            <div style="border-top: 1px solid var(--color-border-light); padding-top: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--color-text-subtle);">
+              <span>{formatDate(art.data.pubDate)}</span>
+              <a href={`/noticias/${art.id}/`} style="color: var(--color-primary); font-weight: 700;">Leer nota →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+  </div>
+</BaseLayout>
